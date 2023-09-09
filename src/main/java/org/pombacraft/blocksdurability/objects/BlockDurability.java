@@ -1,15 +1,27 @@
 package org.pombacraft.blocksdurability.objects;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.scheduler.BukkitTask;
+import org.pombacraft.blocksdurability.BlocksDurability;
+import org.pombacraft.blocksdurability.managers.BlocksDurabilityManager;
+import org.pombacraft.blocksdurability.managers.ConfigManager;
 
 public class BlockDurability {
 	
+	private static final int TICKS_PER_SECOND = 20;
+	
+	private String _id;
 	private Material _type;
 	private int _durability;
+	private BukkitTask _task;
 	
-	public BlockDurability(Material type) {
+	public BlockDurability(String id, Material type) {
+		_id = id;
 		_type = type;
-		_durability = 0; // TODO
+		_durability = 1;
+		
+		regenerate();
 	}
 	
 	public int getDurability() {
@@ -17,7 +29,40 @@ public class BlockDurability {
 	}
 	
 	public int getMaxDurability() {
-		return 0; // TODO
+		return ConfigManager.getInstance().getDurability(_type);
+	}
+	
+	public boolean exploded() {
+		_durability--;		
+		return _durability == 0;
+	}
+	
+	private void regenerate() {
+		ConfigManager configManager = ConfigManager.getInstance();
+		int delay = configManager.getRegenerationDelay();
+		
+		_task = Bukkit.getScheduler().runTaskLater(BlocksDurability.getBlocksDurability(), new Runnable() {
+			
+			@Override
+			public void run() {
+				_durability++;
+				
+				if (_durability == getMaxDurability()) {
+					deleteBlockDurability();
+				}
+				else {
+					regenerate();
+				}
+			}
+		}, delay*TICKS_PER_SECOND);
+	}
+	
+	public void deleteBlockDurability() {
+		if (_task != null) {
+			_task.cancel();
+		}
+		
+		BlocksDurabilityManager.remove(_id);
 	}
 
 }

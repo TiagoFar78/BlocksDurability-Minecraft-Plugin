@@ -1,0 +1,6 @@
+RegenerationDelay: 60
+ItemNBTTag: "PombaChunks"
+DurabilityMessage: "&e{CURRENT}/{MAX}"
+Endstone: 3
+Obsidian: 5
+Bedrock: 10
