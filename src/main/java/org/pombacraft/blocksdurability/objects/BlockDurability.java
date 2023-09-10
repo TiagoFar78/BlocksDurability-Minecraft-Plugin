@@ -16,10 +16,10 @@ public class BlockDurability {
 	private int _durability;
 	private BukkitTask _task;
 	
-	public BlockDurability(String id, Material type) {
+	public BlockDurability(String id, Material type, boolean isFullDurability) {
 		_id = id;
 		_type = type;
-		_durability = 1;
+		_durability = isFullDurability ? getMaxDurability() : 1;
 		
 		regenerate();
 	}
@@ -48,7 +48,7 @@ public class BlockDurability {
 				_durability++;
 				
 				if (_durability == getMaxDurability()) {
-					deleteBlockDurability();
+					delete();
 				}
 				else {
 					regenerate();
@@ -57,7 +57,7 @@ public class BlockDurability {
 		}, delay*TICKS_PER_SECOND);
 	}
 	
-	public void deleteBlockDurability() {
+	public void delete() {
 		if (_task != null) {
 			_task.cancel();
 		}

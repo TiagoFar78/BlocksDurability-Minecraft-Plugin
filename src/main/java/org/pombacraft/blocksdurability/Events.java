@@ -1,8 +1,11 @@
 package org.pombacraft.blocksdurability;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,21 +21,51 @@ import org.pombacraft.blocksdurability.managers.ConfigManager;
 
 public class Events implements Listener {
 	
+	private static final int EXPLOSION_RADIUS = 3;
+	
 	@EventHandler
     public void onBlockExplode(BlockExplodeEvent e) {
-        handleExplosion(e.blockList());
+        handleExplosion(e.getBlock().getLocation(), e.blockList());
     }
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent e) {
-        handleExplosion(e.blockList());
+        handleExplosion(e.getEntity().getLocation(), e.blockList());
     }
 
-	private void handleExplosion(List<Block> blocks) {
-    	for (Block block : blocks) {
-    		BlocksDurabilityManager.detectedExplosion(block);
+	private void handleExplosion(Location detonatorLoc, List<Block> blocks) {
+    	for (Block block : getAffectedBlocks(detonatorLoc)) {
+    		if (BlocksDurabilityManager.detectedExplosion(block) == 0) {
+    			blocks.remove(block);
+    		}
+    		
     	}
     }
+	
+	private List<Block> getAffectedBlocks(Location detonatorLoc) {
+		List<Block> blocks = new ArrayList<Block>();
+		
+		World world = detonatorLoc.getWorld();
+		
+		for (int x = -EXPLOSION_RADIUS; x <= EXPLOSION_RADIUS; x++) {
+			for (int y = -EXPLOSION_RADIUS; y <= EXPLOSION_RADIUS; y++) {
+				for (int z = -EXPLOSION_RADIUS; z <= EXPLOSION_RADIUS; z++) {
+					Location targetLoc = new Location(world,
+							detonatorLoc.getX() + x, detonatorLoc.getY() + y,
+							detonatorLoc.getZ() + z);
+
+					if (detonatorLoc.distance(targetLoc) <= EXPLOSION_RADIUS) {
+						Block block = world.getBlockAt(targetLoc);
+						if (block.getType() != Material.AIR) {
+							blocks.add(block);
+						}
+					}
+				}
+			}
+		}
+		
+		return blocks;
+	}
 	
 	
 	@EventHandler
@@ -73,7 +106,7 @@ public class Events implements Listener {
 		}
 		
 		if (itemMeta.getAsString().contains(configManager.getNBTTag())) {
-			int currentDurability = BlocksDurabilityManager.getDurability(block.getLocation());
+			int currentDurability = BlocksDurabilityManager.getDurability(block);
 					
 			String message = configManager.getDurabilityMessage()
 					.replace("&", "§")

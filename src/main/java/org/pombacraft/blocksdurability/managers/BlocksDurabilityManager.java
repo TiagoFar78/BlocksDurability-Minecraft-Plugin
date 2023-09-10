@@ -11,41 +11,43 @@ public class BlocksDurabilityManager {
 	
 	private static Hashtable<String, BlockDurability> blocks = new Hashtable<String, BlockDurability>();
 	
-	public static int getDurability(Location loc) {
-		BlockDurability block = blocks.get(getId(loc));
-		if (block == null) {
-			return -1;
+	public static int getDurability(Block block) {
+		BlockDurability blockDurability = blocks.get(getId(block.getLocation()));
+		if (blockDurability == null) {
+			return ConfigManager.getInstance().getDurability(block.getType());
 		}
 		
-		return block.getDurability();
+		return blockDurability.getDurability();
 	}
 	
-	public static void detectedExplosion(Block worldBlock) {
+	public static int detectedExplosion(Block worldBlock) {
 		Location loc = worldBlock.getLocation();
 		Material type = worldBlock.getType();
 		
 		ConfigManager configManager = ConfigManager.getInstance();
 		if (configManager.getDurability(type) == -1) {
-			return;
+			return -1;
 		}
 		
 		String id = getId(loc);		
 		
 		BlockDurability block = blocks.get(id);
 		if (block == null) {
-			block = new BlockDurability(id, type);
+			block = new BlockDurability(id, type, true);
 			blocks.put(id, block);
 		}
 		
 		if (block.exploded()) {
-			block.deleteBlockDurability();
+			block.delete();
 			worldBlock.setType(Material.AIR);
 		}
+		
+		return 0;
 	}
 	
 	public static void add(Location loc, Material type) {
 		String id = getId(loc);
-		blocks.put(id, new BlockDurability(id, type));
+		blocks.put(id, new BlockDurability(id, type, false));
 	}
 	
 	public static void remove(String id) {
