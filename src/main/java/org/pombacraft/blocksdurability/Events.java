@@ -53,11 +53,11 @@ public class Events implements Listener {
 		
 		for (int x = -EXPLOSION_RADIUS; x <= EXPLOSION_RADIUS; x++) {
 			for (int y = -EXPLOSION_RADIUS; y <= EXPLOSION_RADIUS; y++) {
-				for (int z = -EXPLOSION_RADIUS; z <= EXPLOSION_RADIUS; z++) {
-					if (detonatorLoc.getY() + y <= lastBedrockY) {
-						continue;
-					}
-					
+				if (detonatorLoc.getY() + y <= lastBedrockY) {
+					continue;
+				}
+				
+				for (int z = -EXPLOSION_RADIUS; z <= EXPLOSION_RADIUS; z++) {	
 					Location targetLoc = new Location(world, detonatorLoc.getX() + x, 
 							detonatorLoc.getY() + y, detonatorLoc.getZ() + z);
 
