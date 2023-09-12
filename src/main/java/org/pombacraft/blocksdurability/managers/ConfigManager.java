@@ -15,6 +15,7 @@ public class ConfigManager {
 	}
 	
 	private int _regenerationDelay;
+	private int _lastBedrockY;
 	private Hashtable<Material, Integer> _materialsDurability;
 	private String _NBTTag;
 	private String _durabilityMessage;
@@ -23,6 +24,7 @@ public class ConfigManager {
 		YamlConfiguration config = BlocksDurability.getYamlConfiguration();
 		
 		_regenerationDelay = config.getInt("RegenerationDelay");
+		_lastBedrockY = config.getInt("LastBedrockY");
 		_materialsDurability = new Hashtable<Material, Integer>();
 		_materialsDurability.put(Material.END_STONE, config.getInt("Endstone"));
 		_materialsDurability.put(Material.OBSIDIAN, config.getInt("Obsidian"));
@@ -33,6 +35,10 @@ public class ConfigManager {
 	
 	public int getRegenerationDelay() {
 		return _regenerationDelay;
+	}
+	
+	public int getLastBedrockY() {
+		return _lastBedrockY;
 	}
 	
 	public int getDurability(Material type) {

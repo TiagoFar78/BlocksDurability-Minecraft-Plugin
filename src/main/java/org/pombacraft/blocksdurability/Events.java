@@ -19,6 +19,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.pombacraft.blocksdurability.managers.BlocksDurabilityManager;
 import org.pombacraft.blocksdurability.managers.ConfigManager;
 
+import com.connorlinfoot.actionbarapi.ActionBarAPI;
+
 public class Events implements Listener {
 	
 	private static final int EXPLOSION_RADIUS = 3;
@@ -43,6 +45,8 @@ public class Events implements Listener {
     }
 	
 	private List<Block> getAffectedBlocks(Location detonatorLoc) {
+		int lastBedrockY = ConfigManager.getInstance().getLastBedrockY();
+		
 		List<Block> blocks = new ArrayList<Block>();
 		
 		World world = detonatorLoc.getWorld();
@@ -50,9 +54,12 @@ public class Events implements Listener {
 		for (int x = -EXPLOSION_RADIUS; x <= EXPLOSION_RADIUS; x++) {
 			for (int y = -EXPLOSION_RADIUS; y <= EXPLOSION_RADIUS; y++) {
 				for (int z = -EXPLOSION_RADIUS; z <= EXPLOSION_RADIUS; z++) {
-					Location targetLoc = new Location(world,
-							detonatorLoc.getX() + x, detonatorLoc.getY() + y,
-							detonatorLoc.getZ() + z);
+					if (detonatorLoc.getY() + y <= lastBedrockY) {
+						continue;
+					}
+					
+					Location targetLoc = new Location(world, detonatorLoc.getX() + x, 
+							detonatorLoc.getY() + y, detonatorLoc.getZ() + z);
 
 					if (detonatorLoc.distance(targetLoc) <= EXPLOSION_RADIUS) {
 						Block block = world.getBlockAt(targetLoc);
@@ -113,7 +120,7 @@ public class Events implements Listener {
 					.replace("{CURRENT}", Integer.toString(currentDurability))
 					.replace("{MAX}", Integer.toString(blockMaxDurability));
 			
-			player.sendMessage(message);
+			ActionBarAPI.sendActionBar(player, message);
 		}
 	}
 	

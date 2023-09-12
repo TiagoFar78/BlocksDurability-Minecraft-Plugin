@@ -1,4 +1,5 @@
 RegenerationDelay: 60
+LastBedrockY: -60
 ItemNBTTag: "PombaChunks"
 DurabilityMessage: "&e{CURRENT}/{MAX}"
 Endstone: 3
