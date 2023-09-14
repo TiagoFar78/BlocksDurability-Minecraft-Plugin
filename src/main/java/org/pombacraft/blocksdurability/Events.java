@@ -19,11 +19,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.pombacraft.blocksdurability.managers.BlocksDurabilityManager;
 import org.pombacraft.blocksdurability.managers.ConfigManager;
 
-import com.connorlinfoot.actionbarapi.ActionBarAPI;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
 
 public class Events implements Listener {
 	
 	private static final int EXPLOSION_RADIUS = 3;
+	private static final String INFINITE_SYMBOL = "∞";
 	
 	@EventHandler
     public void onBlockExplode(BlockExplodeEvent e) {
@@ -112,16 +115,23 @@ public class Events implements Listener {
 			return;
 		}
 		
-		if (itemMeta.getAsString().contains(configManager.getNBTTag())) {
+		if (!itemMeta.getAsString().contains(configManager.getNBTTag())) {
+			return;
+		}
+		
+		String message = configManager.getDurabilityMessage().replace("&", "§");
+		if (block.getLocation().getBlockY() <= configManager.getLastBedrockY()) {
+			message = message.replace("{CURRENT}", INFINITE_SYMBOL).replace("{MAX}", INFINITE_SYMBOL);
+		}
+		else {
 			int currentDurability = BlocksDurabilityManager.getDurability(block);
-					
-			String message = configManager.getDurabilityMessage()
-					.replace("&", "§")
+			
+			message = message
 					.replace("{CURRENT}", Integer.toString(currentDurability))
 					.replace("{MAX}", Integer.toString(blockMaxDurability));
-			
-			ActionBarAPI.sendActionBar(player, message);
 		}
+		
+		player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
 	}
 	
 }
