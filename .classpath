@@ -24,6 +24,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/TiagoFar78/Desktop/Minecraft/Servidores/Testes na 1.20/plugins/ActionBarAPI-1.5.4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
