@@ -2,6 +2,13 @@ RegenerationDelay: 60
 LastBedrockY: -60
 ItemNBTTag: "PombaChunks"
 DurabilityMessage: "&e{CURRENT}/{MAX}"
-Endstone: 3
-Obsidian: 5
-Bedrock: 10
+Blocks:
+  Endstone:
+    Name: "END_STONE"
+    Durability: 3
+  Obsidian:
+    Name: "OBSIDIAN"
+    Durability: 5
+  Bedrock:
+    Name: "BEDROCK"
+    Durability: 10

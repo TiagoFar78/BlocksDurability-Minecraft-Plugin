@@ -1,6 +1,8 @@
 package org.pombacraft.blocksdurability.managers;
 
 import java.util.Hashtable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,11 +28,24 @@ public class ConfigManager {
 		_regenerationDelay = config.getInt("RegenerationDelay");
 		_lastBedrockY = config.getInt("LastBedrockY");
 		_materialsDurability = new Hashtable<Material, Integer>();
-		_materialsDurability.put(Material.END_STONE, config.getInt("Endstone"));
-		_materialsDurability.put(Material.OBSIDIAN, config.getInt("Obsidian"));
-		_materialsDurability.put(Material.BEDROCK, config.getInt("Bedrock"));
+		populateMaterialsDurability(config);
 		_NBTTag = config.getString("ItemNBTTag");
 		_durabilityMessage = config.getString("DurabilityMessage");
+	}
+	
+	private void populateMaterialsDurability(YamlConfiguration config) {
+		String path = "Blocks.";
+		
+		List<String> blocksPath = config.getKeys(true).stream().filter(p -> p.startsWith(path) && p.lastIndexOf(".") == path.length() - 1).collect(Collectors.toList());
+		for (String blockPath : blocksPath) {
+			String name = config.getString(blockPath + ".Name");
+			int durability = config.getInt(blockPath + ".Durability");
+			
+			Material blockType = Material.getMaterial(name);
+			
+			_materialsDurability.put(blockType, durability);
+		}
+		
 	}
 	
 	public int getRegenerationDelay() {
